@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PELADA BN - Placar</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+
+<body>
+    <div class="caixa">
+        <div style="text-align: center;">
+            <label for="input-foto" style="cursor: pointer; display: inline-block;">
+                <img src="DMWW5575.JPG" id="foto-pelada" alt="Logo"
+                    style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 1px solid rgb(77, 66, 4); margin: 10px 0 0 0;">
+                <p style="font-size: 0.8rem; color: gray;">Toque na foto para mudar</p>
+            </label>
+
+            <input type="file" id="input-foto" accept="image/*" style="display: none;" onchange="trocarFoto(this)">
+        </div>
+        <h1 class="titulo" style="text-align: center; margin: 0 0 10px;">PELADA BN</h1>
+
+        <div class="fileira">
+            <div class="time timeum">
+                <h1><input type="text" id="cap1" placeholder="capitao" oninput="salvarNome('cap1')"></h1>
+                <div class="vte">
+                    <input class="vitoria" type="button" value="V" onclick="adicionar(3, 'time1')">
+                    <input class="empate" type="button" value="E" onclick="adicionar(1, 'time1')">
+                </div>
+                <h1 class="placar" id="time1">0</h1>
+            </div>
+
+            <div class="time timedois">
+                <h1><input type="text" id="cap2" placeholder="capitao" oninput="salvarNome('cap2')"></h1>
+                <div class="vte">
+                    <input class="vitoria" type="button" value="V" onclick="adicionar(3, 'time2')">
+                    <input class="empate" type="button" value="E" onclick="adicionar(1, 'time2')">
+                </div>
+                <h1 class="placar" id="time2">0</h1>
+            </div>
+        </div>
+
+        <div class="fileira">
+            <div class="time timetres">
+                <h1><input type="text" id="cap3" placeholder="capitao" oninput="salvarNome('cap3')"></h1>
+                <div class="vte">
+                    <input class="vitoria" type="button" value="V" onclick="adicionar(3, 'time3')">
+                    <input class="empate" type="button" value="E" onclick="adicionar(1, 'time3')">
+                </div>
+                <h1 class="placar" id="time3">0</h1>
+            </div>
+
+            <div class="time timequatro">
+                <h1><input type="text" id="cap4" placeholder="capitao" oninput="salvarNome('cap4')"></h1>
+                <div class="vte">
+                    <input class="vitoria" type="button" value="V" onclick="adicionar(3, 'time4')">
+                    <input class="empate" type="button" value="E" onclick="adicionar(1, 'time4')">
+                </div>
+                <h1 class="placar" id="time4">0</h1>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <button class="finalizar" onclick="limparTudo()">
+                🏆 FINALIZAR
+            </button>
+        </div>
+
+        <div id="secao-historico">
+            <h2>🏆 Histórico de Vencedores</h2>
+            <ul id="lista-historico"></ul>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            const placares = ['time1', 'time2', 'time3', 'time4'];
+            const nomes = ['cap1', 'cap2', 'cap3', 'cap4'];
+            placares.forEach(id => {
+                const salvo = localStorage.getItem(id);
+                if (salvo !== null) document.getElementById(id).innerText = salvo;
+            });
+            nomes.forEach(id => {
+                const salvo = localStorage.getItem(id);
+                if (salvo !== null) document.getElementById(id).value = salvo;
+            });
+            exibirHistorico();
+        };
+
+        function salvarNome(idInput) {
+            localStorage.setItem(idInput, document.getElementById(idInput).value);
+        }
+
+        function adicionar(pontos, idDoH1) {
+            const display = document.getElementById(idDoH1);
+            let total = parseInt(display.innerText) + pontos;
+            display.innerText = total;
+            localStorage.setItem(idDoH1, total);
+        }
+
+        function limparTudo() {
+            const senhaCorreta = "1234";
+            const senhaDigitada = prompt("Digite a senha para zerar o placar:");
+
+            if (senhaDigitada === senhaCorreta) {
+                const vencedor = calcularVencedor();
+
+                if (vencedor.pontos > 0) {
+                    // DISPARA OS CONFETES!
+                    confetti({
+                        particleCount: 150,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+
+                    alert(`🎉 PARABÉNS AO CAMPEÃO: ${vencedor.nome} com ${vencedor.pontos} pontos!`);
+
+                    salvarVencedorNoHistorico(vencedor);
+                }
+
+                // Limpa os dados atuais
+                ['time1', 'time2', 'time3', 'time4', 'cap1', 'cap2', 'cap3', 'cap4'].forEach(item => {
+                    localStorage.removeItem(item);
+                });
+
+                // Pequeno delay para a pessoa ver o confete antes de resetar
+                setTimeout(() => { location.reload(); }, 2000);
+
+            } else if (senhaDigitada !== null) {
+                alert("Senha incorreta!");
+            }
+        }
+
+        function calcularVencedor() {
+            const times = [
+                { nome: document.getElementById('cap1').value || "Time 1", pontos: parseInt(document.getElementById('time1').innerText) },
+                { nome: document.getElementById('cap2').value || "Time 2", pontos: parseInt(document.getElementById('time2').innerText) },
+                { nome: document.getElementById('cap3').value || "Time 3", pontos: parseInt(document.getElementById('time3').innerText) },
+                { nome: document.getElementById('cap4').value || "Time 4", pontos: parseInt(document.getElementById('time4').innerText) }
+            ];
+            return times.reduce((prev, curr) => (prev.pontos > curr.pontos) ? prev : curr);
+        }
+
+        function salvarVencedorNoHistorico(vencedor) {
+            // 1. Pega o histórico atual ou cria um novo array
+            let historico = JSON.parse(localStorage.getItem('historico_pelada')) || [];
+
+            const data = new Date().toLocaleDateString('pt-BR');
+            const novoRegistro = `${data}: 🥇 ${vencedor.nome} (${vencedor.pontos} pts)`;
+
+            // 2. Lógica de Sobreposição (Máximo 16 itens)
+            // Se já tiver 16 ou mais, remove o primeiro (o mais antigo)
+            if (historico.length >= 16) {
+                historico.shift(); // Remove o item no índice 0
+            }
+
+            // 3. Adiciona o novo vencedor ao final
+            historico.push(novoRegistro);
+
+            // 4. Salva de volta no localStorage
+            localStorage.setItem('historico_pelada', JSON.stringify(historico));
+        }
+
+        function exibirHistorico() {
+            const lista = document.getElementById('lista-historico');
+            const historico = JSON.parse(localStorage.getItem('historico_pelada')) || [];
+            historico.reverse().forEach(item => {
+                const li = document.createElement('li');
+                li.innerText = item;
+                li.style.color = "#ddd";
+                li.style.margin = "5px 0";
+                lista.appendChild(li);
+            });
+        }
+    </script>
+</body>
+
+</html>
