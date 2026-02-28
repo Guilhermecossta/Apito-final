@@ -11,12 +11,12 @@
 
 <body>
     <div class="caixa">
-        
+
         <h1 class="titulo" style="text-align: center; margin: 0 0 10px;">PELADA BN</h1>
 
         <div class="fileira">
             <div class="time timeum">
-                <h1><input type="text" id="cap1" placeholder="capitao" oninput="salvarNome('cap1')"></h1>
+                <h1><input type="text" id="cap1" placeholder="CAPITÃO" oninput="salvarNome('cap1')"></h1>
                 <div class="vte">
                     <input class="vitoria" type="button" value="V" onclick="adicionar(3, 'time1')">
                     <input class="empate" type="button" value="E" onclick="adicionar(1, 'time1')">
@@ -25,7 +25,7 @@
             </div>
 
             <div class="time timedois">
-                <h1><input type="text" id="cap2" placeholder="capitao" oninput="salvarNome('cap2')"></h1>
+                <h1><input type="text" id="cap2" placeholder="CAPITÃO" oninput="salvarNome('cap2')"></h1>
                 <div class="vte">
                     <input class="vitoria" type="button" value="V" onclick="adicionar(3, 'time2')">
                     <input class="empate" type="button" value="E" onclick="adicionar(1, 'time2')">
@@ -36,7 +36,7 @@
 
         <div class="fileira">
             <div class="time timetres">
-                <h1><input type="text" id="cap3" placeholder="capitao" oninput="salvarNome('cap3')"></h1>
+                <h1><input type="text" id="cap3" placeholder="CAPITÃO" oninput="salvarNome('cap3')"></h1>
                 <div class="vte">
                     <input class="vitoria" type="button" value="V" onclick="adicionar(3, 'time3')">
                     <input class="empate" type="button" value="E" onclick="adicionar(1, 'time3')">
@@ -45,7 +45,7 @@
             </div>
 
             <div class="time timequatro">
-                <h1><input type="text" id="cap4" placeholder="capitao" oninput="salvarNome('cap4')"></h1>
+                <h1><input type="text" id="cap4" placeholder="CAPITÃO" oninput="salvarNome('cap4')"></h1>
                 <div class="vte">
                     <input class="vitoria" type="button" value="V" onclick="adicionar(3, 'time4')">
                     <input class="empate" type="button" value="E" onclick="adicionar(1, 'time4')">
@@ -54,10 +54,13 @@
             </div>
         </div>
 
-        <div style="text-align: center;">
+        <div class="resetar" style="text-align: center;">
             <button class="finalizar" onclick="limparTudo()">
                 🏆 FINALIZAR
             </button>
+            <p onclick="limparHistoricoDefinitivo()"
+                style="font-size: 10px; color: #8f8d8d; margin-top: 5px; cursor: pointer;">Finalizar pelada
+            </p>
         </div>
 
         <div id="secao-historico">
@@ -65,9 +68,30 @@
             <ul id="lista-historico"></ul>
         </div>
     </div>
+    <div id="btn-cronometro" onclick="toggleCronometro()">⏱️</div>
+
+    <div id="modal-cronometro">
+        <div class="modal-conteudo">
+            <span class="fechar" onclick="toggleCronometro()">&times;</span>
+            <h3>TEMPO DE PARTIDA</h3>
+            <div id="display-tempo">00:00</div>
+
+            <div class="controles">
+                <button class="btn-start" onclick="iniciarCronometro()">INICIAR</button>
+                <button class="btn-pause" onclick="pausarCronometro()">PAUSAR</button>
+            </div>
+
+            <button class="btn-reset" onclick="zerarCronometro()">ZERAR TEMPO</button>
+        </div>
+    </div>
 
     <script>
         window.onload = function () {
+            // Carregar Foto salva
+            const fotoSalva = localStorage.getItem('foto_pelada');
+            if (fotoSalva) document.getElementById('foto-pelada').src = fotoSalva;
+
+            // Carregar Placares e Nomes
             const placares = ['time1', 'time2', 'time3', 'time4'];
             const nomes = ['cap1', 'cap2', 'cap3', 'cap4'];
             placares.forEach(id => {
@@ -81,15 +105,42 @@
             exibirHistorico();
         };
 
+        function trocarFoto(input) {
+            // Verificamos se existe o input e se o primeiro arquivo existe
+            if (input.files && input.files) {
+                const leitor = new FileReader();
+
+                leitor.onload = function (e) {
+                    const base64Image = e.target.result;
+                    // Atualiza a imagem na tela
+                    document.getElementById('foto-pelada').src = base64Image;
+                    // Salva no navegador para não sumir ao dar F5
+                    localStorage.setItem('foto_pelada', base64Image);
+                };
+
+                // A CORREÇÃO ESTÁ AQUI: Adicionamos o
+                leitor.readAsDataURL(input.files);
+            }
+        }
+
         function salvarNome(idInput) {
             localStorage.setItem(idInput, document.getElementById(idInput).value);
         }
 
         function adicionar(pontos, idDoH1) {
-            const display = document.getElementById(idDoH1);
-            let total = parseInt(display.innerText) + pontos;
-            display.innerText = total;
-            localStorage.setItem(idDoH1, total);
+            // Define o texto da mensagem baseado nos pontos
+            const tipoAcao = (pontos === 3) ? "VITÓRIA" : "EMPATE";
+
+            // Pede confirmação ao usuário
+            const confirmacao = confirm(`Deseja realmente somar 1 ${tipoAcao}?`);
+
+            if (confirmacao) {
+                const display = document.getElementById(idDoH1);
+                let total = (parseInt(display.innerText) || 0) + pontos;
+                display.innerText = total;
+                localStorage.setItem(idDoH1, total);
+            }
+            // Se o usuário clicar em cancelar, nada acontece.
         }
 
         function limparTudo() {
@@ -100,26 +151,20 @@
                 const vencedor = calcularVencedor();
 
                 if (vencedor.pontos > 0) {
-                    // DISPARA OS CONFETES!
                     confetti({
                         particleCount: 150,
                         spread: 70,
                         origin: { y: 0.6 }
                     });
-
                     alert(`🎉 PARABÉNS AO CAMPEÃO: ${vencedor.nome} com ${vencedor.pontos} pontos!`);
-
                     salvarVencedorNoHistorico(vencedor);
                 }
 
-                // Limpa os dados atuais
                 ['time1', 'time2', 'time3', 'time4', 'cap1', 'cap2', 'cap3', 'cap4'].forEach(item => {
                     localStorage.removeItem(item);
                 });
 
-                // Pequeno delay para a pessoa ver o confete antes de resetar
                 setTimeout(() => { location.reload(); }, 2000);
-
             } else if (senhaDigitada !== null) {
                 alert("Senha incorreta!");
             }
@@ -136,35 +181,91 @@
         }
 
         function salvarVencedorNoHistorico(vencedor) {
-            // 1. Pega o histórico atual ou cria um novo array
             let historico = JSON.parse(localStorage.getItem('historico_pelada')) || [];
-
             const data = new Date().toLocaleDateString('pt-BR');
             const novoRegistro = `${data}: 🥇 ${vencedor.nome} (${vencedor.pontos} pts)`;
 
-            // 2. Lógica de Sobreposição (Máximo 16 itens)
-            // Se já tiver 16 ou mais, remove o primeiro (o mais antigo)
             if (historico.length >= 16) {
-                historico.shift(); // Remove o item no índice 0
+                historico.shift();
             }
 
-            // 3. Adiciona o novo vencedor ao final
             historico.push(novoRegistro);
-
-            // 4. Salva de volta no localStorage
             localStorage.setItem('historico_pelada', JSON.stringify(historico));
         }
 
         function exibirHistorico() {
             const lista = document.getElementById('lista-historico');
             const historico = JSON.parse(localStorage.getItem('historico_pelada')) || [];
-            historico.reverse().forEach(item => {
+            lista.innerHTML = ""; // Limpa a lista antes de renderizar
+
+            historico.slice().reverse().forEach(item => {
                 const li = document.createElement('li');
                 li.innerText = item;
                 li.style.color = "#ddd";
                 li.style.margin = "5px 0";
                 lista.appendChild(li);
             });
+        }
+
+        // Função para apagar o histórico pelo botão escondido
+        function limparHistoricoDefinitivo() {
+            if (prompt("Digite a senha para APAGAR O HISTÓRICO:") === "1234") {
+                localStorage.removeItem('historico_pelada');
+                location.reload();
+            }
+        }
+
+        let cronometro;
+        let segundos = 0;
+        let rodando = false;
+
+        function iniciarCronometro() {
+            if (!rodando) {
+                rodando = true;
+                cronometro = setInterval(() => {
+                    segundos++;
+                    atualizarDisplay();
+                }, 1000);
+            }
+        }
+
+        function pausarCronometro() {
+            clearInterval(cronometro);
+            rodando = false;
+        }
+
+        function zerarCronometro() {
+            if (confirm("Deseja zerar o tempo da partida?")) {
+                clearInterval(cronometro);
+                rodando = false;
+                segundos = 0;
+                atualizarDisplay();
+            }
+        }
+
+        function atualizarDisplay() {
+            const min = Math.floor(segundos / 60);
+            const seg = segundos % 60;
+
+            const tempoFormatado =
+                (min < 10 ? "0" + min : min) + ":" +
+                (seg < 10 ? "0" + seg : seg);
+
+            // CORREÇÃO: Alvo agora é o display de números, não o modal todo
+            document.getElementById('display-tempo').innerText = tempoFormatado;
+        }
+
+        function toggleCronometro() {
+            // CORREÇÃO: Alvo agora é o modal, para ele aparecer e sumir
+            const modal = document.getElementById('modal-cronometro');
+            const btn = document.getElementById('btn-cronometro');
+            if (modal.style.display === 'none' || modal.style.display === '') {
+                modal.style.display = 'block';
+                btn.style.display = "none";
+            } else {
+                modal.style.display = 'none';
+                btn.style.display = "flex";
+            }
         }
     </script>
 </body>
