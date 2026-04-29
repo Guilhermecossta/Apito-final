@@ -17,19 +17,11 @@
         <div class="fileira">
             <div class="time timeum">
                 <h1><input type="text" id="cap1" placeholder="CAPITÃO" oninput="salvarNome('cap1')"></h1>
-                <div class="vte">
-                    <input class="vitoria" type="button" value="V" onclick="adicionar(3, 'time1')">
-                    <input class="empate" type="button" value="E" onclick="adicionar(1, 'time1')">
-                </div>
                 <h1 class="placar" id="time1">0</h1>
             </div>
 
             <div class="time timedois">
                 <h1><input type="text" id="cap2" placeholder="CAPITÃO" oninput="salvarNome('cap2')"></h1>
-                <div class="vte">
-                    <input class="vitoria" type="button" value="V" onclick="adicionar(3, 'time2')">
-                    <input class="empate" type="button" value="E" onclick="adicionar(1, 'time2')">
-                </div>
                 <h1 class="placar" id="time2">0</h1>
             </div>
         </div>
@@ -37,35 +29,28 @@
         <div class="fileira">
             <div class="time timetres">
                 <h1><input type="text" id="cap3" placeholder="CAPITÃO" oninput="salvarNome('cap3')"></h1>
-                <div class="vte">
-                    <input class="vitoria" type="button" value="V" onclick="adicionar(3, 'time3')">
-                    <input class="empate" type="button" value="E" onclick="adicionar(1, 'time3')">
-                </div>
                 <h1 class="placar" id="time3">0</h1>
             </div>
 
             <div class="time timequatro">
                 <h1><input type="text" id="cap4" placeholder="CAPITÃO" oninput="salvarNome('cap4')"></h1>
-                <div class="vte">
-                    <input class="vitoria" type="button" value="V" onclick="adicionar(3, 'time4')">
-                    <input class="empate" type="button" value="E" onclick="adicionar(1, 'time4')">
-                </div>
                 <h1 class="placar" id="time4">0</h1>
             </div>
         </div>
 
         <div class="resetar" style="text-align: center;">
-            <button class="finalizar" onclick="limparTudo()">
-                🏆 FINALIZAR
+            <button class="btn-começar" onclick="abrirModalPartida()" style="background-color: #28a745;">
+                ⚽ COMEÇAR PARTIDA
             </button>
-            <p onclick="limparHistoricoDefinitivo()"
-                style="font-size: 10px; color: #8f8d8d; margin-top: 5px; cursor: pointer;">Finalizar pelada
-            </p>
+            <br>
+            <button class="finalizar" onclick="limparTudo()">
+                🏆 FINALIZAR PELADA
+            </button>
         </div>
 
-        <div id="secao-historico">
-            <h2>🏆 Histórico de Vencedores</h2>
-            <ul id="lista-historico"></ul>
+        <div id="secao-jogos" style="margin-top: 20px;">
+            <h2>⚽ Últimas Partidas</h2>
+            <ul id="lista-jogos" style="list-style: none; padding: 0;"></ul>
         </div>
     </div>
     <div id="btn-cronometro" onclick="toggleCronometro()">⏱️</div>
@@ -73,6 +58,29 @@
     <div id="modal-cronometro">
         <div class="modal-conteudo">
             <span class="fechar" onclick="toggleCronometro()">&times;</span>
+
+            <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; margin-top: 15px;">
+                <div style="text-align: center;">
+                    <div id="modal-nome-t1"
+                        style="padding: 10px; background-color: white; margin: 2px; color: black; font-weight: bold; border-radius: 5px; min-width: 100px;">
+                        Time 1</div>
+                    <div id="modal-placar-t1"
+                        style="display:none; padding: 10px; background-color: aqua; margin: 2px; color: #000; font-size: 20px; font-weight: bold; border-radius: 5px;">
+                        0</div>
+                </div>
+
+                <div style="font-weight: bold; font-size: 24px; color: white;">VS</div>
+
+                <div style="text-align: center;">
+                    <div id="modal-nome-t2"
+                        style="padding: 10px; background-color: white; margin: 2px; color: black; font-weight: bold; border-radius: 5px; min-width: 100px;">
+                        Time 2</div>
+                    <div id="modal-placar-t2"
+                        style="display:none; padding: 10px; background-color: aqua; margin: 2px; color: #000; font-size: 20px; font-weight: bold; border-radius: 5px;">
+                        0</div>
+                </div>
+            </div>
+
             <h3>TEMPO DE PARTIDA</h3>
             <div id="display-tempo">00:00</div>
 
@@ -81,151 +89,103 @@
                 <button class="btn-pause" onclick="pausarCronometro()">PAUSAR</button>
             </div>
 
-            <button class="btn-reset" onclick="zerarCronometro()">ZERAR TEMPO</button>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                <button class="finalizar" style="background-color: #28a745; color: white;"
+                    onclick="finalizarPartidaRapido()">
+                    FINALIZAR PARTIDA
+                </button>
+                <button class="btn-reset" onclick="zerarCronometro()">ZERAR TEMPO</button>
+            </div>
+        </div>
+    </div>
+    <div id="modal-partida" class="modal-cronometro"
+        style="display:none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8);">
+        <div class="modal-conteudo"
+            style="background-color: #222; margin: 15% auto; padding: 20px; width: 80%; border-radius: 10px; color: white; text-align: center;">
+            <h3>QUEM VAI JOGAR AGORA?</h3>
+            <p>Selecione os dois capitães:</p>
+
+            <div style="display: flex; flex-direction: column; gap: 10px; margin: 20px 0;">
+                <select id="select-time1" style="padding: 10px; border-radius: 5px;"></select>
+                <span style="font-weight: bold;">VS</span>
+                <select id="select-time2" style="padding: 10px; border-radius: 5px;"></select>
+            </div>
+
+            <button onclick="confirmarPartida()"
+                style="background-color: #28a745; color: white; padding: 10px; border: none; border-radius: 5px; width: 100%; cursor: pointer;">CONFIRMAR
+                E INICIAR</button>
+            <button onclick="fecharModalPartida()"
+                style="background-color: #555; color: white; padding: 10px; border: none; border-radius: 5px; width: 100%; margin-top: 10px; cursor: pointer;">CANCELAR</button>
+        </div>
+    </div>
+
+    <div id="modal-alerta" class="modal-cronometro"
+        style="display:none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9);">
+        <div class="modal-conteudo"
+            style="background-color: #333; margin: 20% auto; padding: 20px; width: 70%; border-radius: 10px; color: white; text-align: center; border: 2px solid aqua;">
+            <h3 id="alerta-titulo">AVISO</h3>
+            <p id="alerta-mensagem"></p>
+            <button onclick="fecharAlerta()"
+                style="background-color: aqua; color: black; padding: 10px; border: none; border-radius: 5px; width: 100%; font-weight: bold; cursor: pointer;">OK</button>
+        </div>
+    </div>
+
+    <div id="modal-gols" class="modal-cronometro"
+        style="display:none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9);">
+        <div class="modal-conteudo"
+            style="background-color: #222; margin: 15% auto; padding: 20px; width: 85%; border-radius: 10px; color: white; text-align: center; border: 2px solid #28a745;">
+            <h3 id="titulo-gols">PLACAR FINAL</h3>
+            <div style="display: flex; justify-content: space-around; align-items: center; margin: 20px 0;">
+                <div>
+                    <p id="label-gols-t1" style="font-size: 12px;"></p>
+                    <input type="number" id="input-gols-t1" value="0"
+                        style="width: 50px; padding: 10px; text-align: center; border-radius: 5px;">
+                </div>
+                <span style="font-size: 20px;">X</span>
+                <div>
+                    <p id="label-gols-t2" style="font-size: 12px;"></p>
+                    <input type="number" id="input-gols-t2" value="0"
+                        style="width: 50px; padding: 10px; text-align: center; border-radius: 5px;">
+                </div>
+            </div>
+
+            <button onclick="confirmarGolsModal()"
+                style="background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 5px; width: 100%; font-weight: bold; cursor: pointer;">CONFIRMAR
+                RESULTADO</button>
+            <button onclick="fecharModalGols()"
+                style="background-color: #555; color: white; padding: 8px; border: none; border-radius: 5px; width: 100%; margin-top: 10px; cursor: pointer;">CANCELAR</button>
         </div>
     </div>
 
     <script>
+        let cronometro;
+        let segundos = 0;
+        let rodando = false;
+
         window.onload = function () {
-            // Carregar Foto salva
-            const fotoSalva = localStorage.getItem('foto_pelada');
-            if (fotoSalva) document.getElementById('foto-pelada').src = fotoSalva;
-
             // Carregar Placares e Nomes
-            const placares = ['time1', 'time2', 'time3', 'time4'];
-            const nomes = ['cap1', 'cap2', 'cap3', 'cap4'];
-            placares.forEach(id => {
+            const campos = ['time1', 'time2', 'time3', 'time4', 'cap1', 'cap2', 'cap3', 'cap4'];
+            campos.forEach(id => {
                 const salvo = localStorage.getItem(id);
-                if (salvo !== null) document.getElementById(id).innerText = salvo;
+                if (salvo !== null) {
+                    const el = document.getElementById(id);
+                    if (el.tagName === "INPUT") el.value = salvo;
+                    else el.innerText = salvo;
+                }
             });
-            nomes.forEach(id => {
-                const salvo = localStorage.getItem(id);
-                if (salvo !== null) document.getElementById(id).value = salvo;
-            });
-            exibirHistorico();
+            exibirHistoricoJogos();
+            exibirHistoricoCampeoes();
         };
-
-        function trocarFoto(input) {
-            // Verificamos se existe o input e se o primeiro arquivo existe
-            if (input.files && input.files) {
-                const leitor = new FileReader();
-
-                leitor.onload = function (e) {
-                    const base64Image = e.target.result;
-                    // Atualiza a imagem na tela
-                    document.getElementById('foto-pelada').src = base64Image;
-                    // Salva no navegador para não sumir ao dar F5
-                    localStorage.setItem('foto_pelada', base64Image);
-                };
-
-                // A CORREÇÃO ESTÁ AQUI: Adicionamos o
-                leitor.readAsDataURL(input.files);
-            }
-        }
 
         function salvarNome(idInput) {
             localStorage.setItem(idInput, document.getElementById(idInput).value);
         }
 
-        function adicionar(pontos, idDoH1) {
-            // Define o texto da mensagem baseado nos pontos
-            const tipoAcao = (pontos === 3) ? "VITÓRIA" : "EMPATE";
-
-            // Pede confirmação ao usuário
-            const confirmacao = confirm(`Deseja realmente somar 1 ${tipoAcao}?`);
-
-            if (confirmacao) {
-                const display = document.getElementById(idDoH1);
-                let total = (parseInt(display.innerText) || 0) + pontos;
-                display.innerText = total;
-                localStorage.setItem(idDoH1, total);
-            }
-            // Se o usuário clicar em cancelar, nada acontece.
-        }
-
-        function limparTudo() {
-            const senhaCorreta = "1234";
-            const senhaDigitada = prompt("Digite a senha para zerar o placar:");
-
-            if (senhaDigitada === senhaCorreta) {
-                const vencedor = calcularVencedor();
-
-                if (vencedor.pontos > 0) {
-                    confetti({
-                        particleCount: 150,
-                        spread: 70,
-                        origin: { y: 0.6 }
-                    });
-                    alert(`🎉 PARABÉNS AO CAMPEÃO: ${vencedor.nome} com ${vencedor.pontos} pontos!`);
-                    salvarVencedorNoHistorico(vencedor);
-                }
-
-                ['time1', 'time2', 'time3', 'time4', 'cap1', 'cap2', 'cap3', 'cap4'].forEach(item => {
-                    localStorage.removeItem(item);
-                });
-
-                setTimeout(() => { location.reload(); }, 2000);
-            } else if (senhaDigitada !== null) {
-                alert("Senha incorreta!");
-            }
-        }
-
-        function calcularVencedor() {
-            const times = [
-                { nome: document.getElementById('cap1').value || "Time 1", pontos: parseInt(document.getElementById('time1').innerText) },
-                { nome: document.getElementById('cap2').value || "Time 2", pontos: parseInt(document.getElementById('time2').innerText) },
-                { nome: document.getElementById('cap3').value || "Time 3", pontos: parseInt(document.getElementById('time3').innerText) },
-                { nome: document.getElementById('cap4').value || "Time 4", pontos: parseInt(document.getElementById('time4').innerText) }
-            ];
-            return times.reduce((prev, curr) => (prev.pontos > curr.pontos) ? prev : curr);
-        }
-
-        function salvarVencedorNoHistorico(vencedor) {
-            let historico = JSON.parse(localStorage.getItem('historico_pelada')) || [];
-            const data = new Date().toLocaleDateString('pt-BR');
-            const novoRegistro = `${data}: 🥇 ${vencedor.nome} (${vencedor.pontos} pts)`;
-
-            if (historico.length >= 16) {
-                historico.shift();
-            }
-
-            historico.push(novoRegistro);
-            localStorage.setItem('historico_pelada', JSON.stringify(historico));
-        }
-
-        function exibirHistorico() {
-            const lista = document.getElementById('lista-historico');
-            const historico = JSON.parse(localStorage.getItem('historico_pelada')) || [];
-            lista.innerHTML = ""; // Limpa a lista antes de renderizar
-
-            historico.slice().reverse().forEach(item => {
-                const li = document.createElement('li');
-                li.innerText = item;
-                li.style.color = "#ddd";
-                li.style.margin = "5px 0";
-                lista.appendChild(li);
-            });
-        }
-
-        // Função para apagar o histórico pelo botão escondido
-        function limparHistoricoDefinitivo() {
-            if (prompt("Digite a senha para APAGAR O HISTÓRICO:") === "1234") {
-                localStorage.removeItem('historico_pelada');
-                location.reload();
-            }
-        }
-
-        let cronometro;
-        let segundos = 0;
-        let rodando = false;
-
+        // --- LÓGICA DO CRONÔMETRO ---
         function iniciarCronometro() {
             if (!rodando) {
                 rodando = true;
-                cronometro = setInterval(() => {
-                    segundos++;
-                    atualizarDisplay();
-                }, 1000);
+                cronometro = setInterval(() => { segundos++; atualizarDisplay(); }, 1000);
             }
         }
 
@@ -235,9 +195,8 @@
         }
 
         function zerarCronometro() {
-            if (confirm("Deseja zerar o tempo da partida?")) {
-                clearInterval(cronometro);
-                rodando = false;
+            if (confirm("Zerar o tempo?")) {
+                pausarCronometro();
                 segundos = 0;
                 atualizarDisplay();
             }
@@ -246,28 +205,138 @@
         function atualizarDisplay() {
             const min = Math.floor(segundos / 60);
             const seg = segundos % 60;
-
-            const tempoFormatado =
-                (min < 10 ? "0" + min : min) + ":" +
-                (seg < 10 ? "0" + seg : seg);
-
-            // CORREÇÃO: Alvo agora é o display de números, não o modal todo
-            document.getElementById('display-tempo').innerText = tempoFormatado;
+            document.getElementById('display-tempo').innerText =
+                `${min < 10 ? "0" + min : min}:${seg < 10 ? "0" + seg : seg}`;
         }
 
         function toggleCronometro() {
-            // CORREÇÃO: Alvo agora é o modal, para ele aparecer e sumir
             const modal = document.getElementById('modal-cronometro');
             const btn = document.getElementById('btn-cronometro');
-            if (modal.style.display === 'none' || modal.style.display === '') {
-                modal.style.display = 'block';
-                btn.style.display = "none";
-            } else {
-                modal.style.display = 'none';
-                btn.style.display = "flex";
+            modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'block' : 'none';
+            if (btn) btn.style.display = (modal.style.display === 'block') ? 'none' : 'flex';
+        }
+
+        // --- LÓGICA DA PARTIDA ---
+        function abrirModalPartida() {
+            const s1 = document.getElementById('select-time1');
+            const s2 = document.getElementById('select-time2');
+            const capitães = [1, 2, 3, 4].map(i => document.getElementById('cap' + i).value || "Time " + i);
+
+            [s1, s2].forEach(select => {
+                select.innerHTML = "";
+                capitães.forEach((nome, i) => {
+                    let opt = document.createElement("option");
+                    opt.value = i + 1;
+                    opt.text = nome;
+                    select.add(opt);
+                });
+            });
+            document.getElementById('modal-partida').style.display = 'block';
+        }
+
+        function fecharModalPartida() {
+            document.getElementById('modal-partida').style.display = 'none';
+        }
+
+        function confirmarPartida() {
+            const idT1 = document.getElementById('select-time1').value;
+            const idT2 = document.getElementById('select-time2').value;
+            if (idT1 === idT2) return alert("Escolha times diferentes!");
+
+            document.getElementById('modal-nome-t1').innerText = document.getElementById('cap' + idT1).value || "Time " + idT1;
+            document.getElementById('modal-nome-t2').innerText = document.getElementById('cap' + idT2).value || "Time " + idT2;
+
+            fecharModalPartida();
+            toggleCronometro();
+            segundos = 0;
+            atualizarDisplay();
+            iniciarCronometro();
+        }
+
+        function finalizarPartidaRapido() {
+            pausarCronometro();
+            const idT1 = document.getElementById('select-time1').value;
+            const idT2 = document.getElementById('select-time2').value;
+            const nomeT1 = document.getElementById('modal-nome-t1').innerText;
+            const nomeT2 = document.getElementById('modal-nome-t2').innerText;
+
+            const g1 = parseInt(prompt(`Gols de ${nomeT1}:`, "0"));
+            const g2 = parseInt(prompt(`Gols de ${nomeT2}:`, "0"));
+
+            if (isNaN(g1) || isNaN(g2)) return;
+
+            // Salvar no Histórico de Jogos
+            const historico = JSON.parse(localStorage.getItem('historico_jogos_bn')) || [];
+            historico.unshift({ t1: nomeT1, gols1: g1, t2: nomeT2, gols2: g2, hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) });
+            localStorage.setItem('historico_jogos_bn', JSON.stringify(historico.slice(0, 20)));
+
+            // Atribuir pontos no Ranking (3 para vitória, 1 para empate)
+            if (g1 > g2) atualizarPontosNoRanking('time' + idT1, 3);
+            else if (g2 > g1) atualizarPontosNoRanking('time' + idT2, 3);
+            else { atualizarPontosNoRanking('time' + idT1, 1); atualizarPontosNoRanking('time' + idT2, 1); }
+
+            alert("Resultado salvo!");
+            location.reload();
+        }
+
+        function atualizarPontosNoRanking(id, pts) {
+            const el = document.getElementById(id);
+            let total = (parseInt(el.innerText) || 0) + pts;
+            localStorage.setItem(id, total);
+        }
+
+        function exibirHistoricoJogos() {
+            const lista = document.getElementById('lista-jogos');
+            const partidas = JSON.parse(localStorage.getItem('historico_jogos_bn')) || [];
+            lista.innerHTML = partidas.map(j => `
+                <li style="background: #333; margin-bottom: 5px; padding: 10px; border-radius: 5px; display: flex; justify-content: space-between; color: white;">
+                    <span>${j.hora}</span>
+                    <b>${j.t1} <span style="color:aqua">${j.gols1}</span> x <span style="color:aqua">${j.gols2}</span> ${j.t2}</b>
+                </li>`).join('');
+        }
+
+        // --- FINALIZAR PELADA ---
+        function limparTudo() {
+            if (prompt("Senha para finalizar rodada:") === "1234") {
+                const v = calcularVencedor();
+                if (v.pontos > 0) {
+                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                    salvarVencedorNoHistorico(v);
+                }
+
+                ['time1', 'time2', 'time3', 'time4', 'cap1', 'cap2', 'cap3', 'cap4'].forEach(k => localStorage.removeItem(k));
+
+                // Apaga histórico de jogos em 3 minutos
+                setTimeout(() => {
+                    localStorage.removeItem('historico_jogos_bn');
+                    exibirHistoricoJogos();
+                }, 3 * 60 * 1000);
+
+                setTimeout(() => location.reload(), 2000);
             }
         }
+
+        function calcularVencedor() {
+            const times = [1, 2, 3, 4].map(i => ({
+                nome: document.getElementById('cap' + i).value || "Time " + i,
+                pontos: parseInt(document.getElementById('time' + i).innerText) || 0
+            }));
+            return times.reduce((a, b) => (a.pontos > b.pontos) ? a : b);
+        }
+
+        function salvarVencedorNoHistorico(v) {
+            let h = JSON.parse(localStorage.getItem('historico_pelada')) || [];
+            h.unshift(`${new Date().toLocaleDateString('pt-BR')}: 🥇 ${v.nome} (${v.pontos} pts)`);
+            localStorage.setItem('historico_pelada', JSON.stringify(h.slice(0, 15)));
+        }
+
+        function exibirHistoricoCampeoes() {
+            const lista = document.getElementById('lista-historico');
+            const h = JSON.parse(localStorage.getItem('historico_pelada')) || [];
+            lista.innerHTML = h.map(item => `<li style="color: #ddd; margin: 5px 0;">${item}</li>`).join('');
+        }
     </script>
+
 </body>
 
 </html>
