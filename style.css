@@ -32,7 +32,7 @@ body {
     margin-top: 50px;
     background: var(--card-bg);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    border-radius: 2px;
+    border-radius: 10px;
 
     h1.titulo {
         letter-spacing: 2px;
@@ -45,6 +45,10 @@ body {
         display: flex;
         width: 100%;
         height: 50%;
+
+        h1{
+            margin-top: 10px;
+        }
     }
 
     .time {
@@ -116,26 +120,6 @@ body {
                 transition: opacity 0.2s;
             }
         }
-    }
-
-
-
-    .zerar {
-        text-align: center;
-        margin: auto;
-        align-items: center;
-        padding: 10px;
-
-        button {
-            padding: 10px;
-            border-radius: 10px;
-            border: none;
-            font-weight: 600;
-        }
-    }
-
-    .resetar {
-        margin-bottom: 20px;
     }
 
     .finalizar {
