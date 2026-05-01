@@ -7,11 +7,41 @@
     <title>PELADA BN - Placar</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        .opcao-time {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 7px 30px;
+            margin: 0 0 10px 0;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .opcao-time.selecionado {
+            background: rgba(61, 61, 61, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 7px 20px;
+            margin: 0 0 10px 0;
+            transition: all 500ms;
+        }
+
+        #modal-partida {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.575);
+        }
+    </style>
 </head>
 
 <body>
     <div class="caixa">
-
         <h1 class="titulo" style="text-align: center; margin: 0 0 10px;">PELADA BN</h1>
 
         <div class="fileira">
@@ -19,7 +49,6 @@
                 <h1><input type="text" id="cap1" placeholder="CAPITÃO" oninput="salvarNome('cap1')"></h1>
                 <h1 class="placar" id="time1">0</h1>
             </div>
-
             <div class="time timedois">
                 <h1><input type="text" id="cap2" placeholder="CAPITÃO" oninput="salvarNome('cap2')"></h1>
                 <h1 class="placar" id="time2">0</h1>
@@ -31,7 +60,6 @@
                 <h1><input type="text" id="cap3" placeholder="CAPITÃO" oninput="salvarNome('cap3')"></h1>
                 <h1 class="placar" id="time3">0</h1>
             </div>
-
             <div class="time timequatro">
                 <h1><input type="text" id="cap4" placeholder="CAPITÃO" oninput="salvarNome('cap4')"></h1>
                 <h1 class="placar" id="time4">0</h1>
@@ -39,121 +67,94 @@
         </div>
 
         <div class="resetar" style="text-align: center;">
-            <button class="btn-começar" onclick="abrirModalPartida()" style="background-color: #28a745;">
+            <button class="btn-começar" onclick="abrirModalPartida()" style="background-color: #28a745; color: white;">
                 ⚽ COMEÇAR PARTIDA
             </button>
-            <br>
-            <button class="finalizar" onclick="limparTudo()">
-                🏆 FINALIZAR PELADA
-            </button>
+            <button class="finalizar" onclick="limparTudo()">🏆 FINALIZAR PELADA</button>
         </div>
 
         <div id="secao-jogos" style="margin-top: 20px;">
-            <h2>⚽ Últimas Partidas</h2>
+            <h2 style="color: white;">⚽ Últimas Partidas</h2>
             <ul id="lista-jogos" style="list-style: none; padding: 0;"></ul>
         </div>
     </div>
+
     <div id="btn-cronometro" onclick="toggleCronometro()">⏱️</div>
 
-    <div id="modal-cronometro">
+    <div id="modal-cronometro"
+        style="display: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.479);">
         <div class="modal-conteudo">
             <span class="fechar" onclick="toggleCronometro()">&times;</span>
-
-            <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; margin-top: 15px;">
-                <div style="text-align: center;">
-                    <div id="modal-nome-t1"
-                        style="padding: 10px; background-color: white; margin: 2px; color: black; font-weight: bold; border-radius: 5px; min-width: 100px;">
-                        Time 1</div>
-                    <div id="modal-placar-t1"
-                        style="display:none; padding: 10px; background-color: aqua; margin: 2px; color: #000; font-size: 20px; font-weight: bold; border-radius: 5px;">
-                        0</div>
-                </div>
-
+            <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px;">
+                <div id="modal-nome-t1"
+                    style="padding: 10px 0; background-color: white; color: black; font-weight: bold; border-radius: 5px; min-width: 100px; text-align: center;">
+                    T1</div>
                 <div style="font-weight: bold; font-size: 24px; color: white;">VS</div>
+                <div id="modal-nome-t2"
+                    style="padding: 10px 0; background-color: white; color: black; font-weight: bold; border-radius: 5px; min-width: 100px; text-align: center;">
+                    T2</div>
+            </div>
+            <h3 style="color: white; text-align: center; margin-top: 20px;">TEMPO DE PARTIDA</h3>
+            <div id="display-tempo"
+                style="font-size: 50px; color: white; text-align: center; font-weight: bold; font-family:arial;">00:00
+            </div>
+            <!-- Controles Simplificados -->
+            <div class="controles"
+                style="text-align: center; margin-top: 20px; display: flex; flex-direction: column; gap: 10px; padding: 0 20px;">
 
-                <div style="text-align: center;">
-                    <div id="modal-nome-t2"
-                        style="padding: 10px; background-color: white; margin: 2px; color: black; font-weight: bold; border-radius: 5px; min-width: 100px;">
-                        Time 2</div>
-                    <div id="modal-placar-t2"
-                        style="display:none; padding: 10px; background-color: aqua; margin: 2px; color: #000; font-size: 20px; font-weight: bold; border-radius: 5px;">
-                        0</div>
+                <!-- Botão Iniciar (Fica visível primeiro) -->
+                <div class="container-botoes-tempo">
+                    <!-- O botão de Iniciar começa VISÍVEL, o de Pausar começa ESCONDIDO -->
+                    <button id="btn-play" class="btn-tempo btn-start visivel"
+                        onclick="controleCronometro('play')">INICIAR</button>
+                    <button id="btn-pause" class="btn-tempo btn-pause escondido" onclick="controleCronometro('pause')"
+                        style="background-color: #ffc107; color: black;">PAUSAR</button>
                 </div>
-            </div>
 
-            <h3>TEMPO DE PARTIDA</h3>
-            <div id="display-tempo">00:00</div>
+                <button class="finalizar"
+                    style="background-color: #28a745; color: white; width: 100%; padding: 15px; font-weight: bold;"
+                    onclick="finalizarPartidaRapido()">FINALIZAR PARTIDA</button>
 
-            <div class="controles">
-                <button class="btn-start" onclick="iniciarCronometro()">INICIAR</button>
-                <button class="btn-pause" onclick="pausarCronometro()">PAUSAR</button>
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
-                <button class="finalizar" style="background-color: #28a745; color: white;"
-                    onclick="finalizarPartidaRapido()">
-                    FINALIZAR PARTIDA
-                </button>
-                <button class="btn-reset" onclick="zerarCronometro()">ZERAR TEMPO</button>
+                <!-- Botão Zerar Tempo -->
+                <button class="btn-reset" onclick="zerarCronometro()" style="width: 100%; padding: 15px;">ZERAR
+                    TEMPO</button>
             </div>
         </div>
     </div>
-    <div id="modal-partida" class="modal-cronometro"
-        style="display:none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8);">
-        <div class="modal-conteudo"
-            style="background-color: #222; margin: 15% auto; padding: 20px; width: 80%; border-radius: 10px; color: white; text-align: center;">
-            <h3>QUEM VAI JOGAR AGORA?</h3>
-            <p>Selecione os dois capitães:</p>
 
-            <div style="display: flex; flex-direction: column; gap: 10px; margin: 20px 0;">
-                <select id="select-time1" style="padding: 10px; border-radius: 5px;"></select>
-                <span style="font-weight: bold;">VS</span>
-                <select id="select-time2" style="padding: 10px; border-radius: 5px;"></select>
+    <!-- Modal Seleção de Times -->
+    <div id="modal-partida">
+        <div
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #222; padding: 20px; text-align: center; border-radius: 15px; border: 1px solid rgb(26, 34, 56); color: white; background-color: rgb(30, 41, 59);">
+
+            <span class="fechar" onclick="fecharModalPartida()"
+                style="position: absolute; top: 10px; right: 15px; font-size: 25px; cursor: pointer; color: #888;">&times;</span>
+
+            <div style="padding: 0 0 20px 0; font-size: 1.5rem; font-weight: bold;">ESCOLHA OS TIMES
             </div>
-
-            <button onclick="confirmarPartida()"
-                style="background-color: #28a745; color: white; padding: 10px; border: none; border-radius: 5px; width: 100%; cursor: pointer;">CONFIRMAR
-                E INICIAR</button>
-            <button onclick="fecharModalPartida()"
-                style="background-color: #555; color: white; padding: 10px; border: none; border-radius: 5px; width: 100%; margin-top: 10px; cursor: pointer;">CANCELAR</button>
-        </div>
-    </div>
-
-    <div id="modal-alerta" class="modal-cronometro"
-        style="display:none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9);">
-        <div class="modal-conteudo"
-            style="background-color: #333; margin: 20% auto; padding: 20px; width: 70%; border-radius: 10px; color: white; text-align: center; border: 2px solid aqua;">
-            <h3 id="alerta-titulo">AVISO</h3>
-            <p id="alerta-mensagem"></p>
-            <button onclick="fecharAlerta()"
-                style="background-color: aqua; color: black; padding: 10px; border: none; border-radius: 5px; width: 100%; font-weight: bold; cursor: pointer;">OK</button>
-        </div>
-    </div>
-
-    <div id="modal-gols" class="modal-cronometro"
-        style="display:none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9);">
-        <div class="modal-conteudo"
-            style="background-color: #222; margin: 15% auto; padding: 20px; width: 85%; border-radius: 10px; color: white; text-align: center; border: 2px solid #28a745;">
-            <h3 id="titulo-gols">PLACAR FINAL</h3>
-            <div style="display: flex; justify-content: space-around; align-items: center; margin: 20px 0;">
-                <div>
-                    <p id="label-gols-t1" style="font-size: 12px;"></p>
-                    <input type="number" id="input-gols-t1" value="0"
-                        style="width: 50px; padding: 10px; text-align: center; border-radius: 5px;">
+            <!-- ... resto do código ... -->
+            <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
+                <div id="coluna-esquerda">
+                    <div class="opcao-time" data-time="1" onclick="selecionarTime(1, 'esquerda')">Time 1</div>
+                    <div class="opcao-time" data-time="2" onclick="selecionarTime(2, 'esquerda')">Time 2</div>
+                    <div class="opcao-time" data-time="3" onclick="selecionarTime(3, 'esquerda')">Time 3</div>
+                    <div class="opcao-time" data-time="4" onclick="selecionarTime(4, 'esquerda')">Time 4</div>
                 </div>
-                <span style="font-size: 20px;">X</span>
-                <div>
-                    <p id="label-gols-t2" style="font-size: 12px;"></p>
-                    <input type="number" id="input-gols-t2" value="0"
-                        style="width: 50px; padding: 10px; text-align: center; border-radius: 5px;">
+                <div style="font-weight: bold; font-size: 2rem; color: white;">X</div>
+                <div id="coluna-direita">
+                    <div class="opcao-time" data-time="1" onclick="selecionarTime(1, 'direita')">Time 1</div>
+                    <div class="opcao-time" data-time="2" onclick="selecionarTime(2, 'direita')">Time 2</div>
+                    <div class="opcao-time" data-time="3" onclick="selecionarTime(3, 'direita')">Time 3</div>
+                    <div class="opcao-time" data-time="4" onclick="selecionarTime(4, 'direita')">Time 4</div>
                 </div>
             </div>
-
-            <button onclick="confirmarGolsModal()"
-                style="background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 5px; width: 100%; font-weight: bold; cursor: pointer;">CONFIRMAR
-                RESULTADO</button>
-            <button onclick="fecharModalGols()"
-                style="background-color: #555; color: white; padding: 8px; border: none; border-radius: 5px; width: 100%; margin-top: 10px; cursor: pointer;">CANCELAR</button>
+            <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
+                <button onclick="confirmarPartidaNova()"
+                    style="background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">CONFIRMAR
+                    JOGO</button>
+                <button onclick="fecharModalPartida()"
+                    style="background-color: transparent; color: #888; border: none; cursor: pointer;">Cancelar</button>
+            </div>
         </div>
     </div>
 
@@ -161,9 +162,10 @@
         let cronometro;
         let segundos = 0;
         let rodando = false;
+        let timeSelecionadoEsq = null;
+        let timeSelecionadoDir = null;
 
         window.onload = function () {
-            // Carregar Placares e Nomes
             const campos = ['time1', 'time2', 'time3', 'time4', 'cap1', 'cap2', 'cap3', 'cap4'];
             campos.forEach(id => {
                 const salvo = localStorage.getItem(id);
@@ -174,18 +176,51 @@
                 }
             });
             exibirHistoricoJogos();
-            exibirHistoricoCampeoes();
         };
 
         function salvarNome(idInput) {
             localStorage.setItem(idInput, document.getElementById(idInput).value);
         }
 
-        // --- LÓGICA DO CRONÔMETRO ---
-        function iniciarCronometro() {
-            if (!rodando) {
-                rodando = true;
-                cronometro = setInterval(() => { segundos++; atualizarDisplay(); }, 1000);
+        function toggleCronometro() {
+            const modal = document.getElementById('modal-cronometro');
+            modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'block' : 'none';
+        }
+
+        function controleCronometro(acao) {
+            const btnPlay = document.getElementById('btn-play');
+            const btnPause = document.getElementById('btn-pause');
+
+            if (acao === 'play') {
+                // Lógica de Iniciar
+                if (!rodando) {
+                    rodando = true;
+                    cronometro = setInterval(() => {
+                        segundos++;
+                        atualizarDisplay();
+                    }, 1000);
+
+                    // Troca visual: Esconde Play, Mostra Pause
+                    btnPlay.classList.replace('visivel', 'escondido');
+                    btnPause.classList.replace('escondido', 'visivel');
+                }
+            } else {
+                // Lógica de Pausar
+                clearInterval(cronometro);
+                rodando = false;
+
+                // Troca visual: Esconde Pause, Mostra Play
+                btnPause.classList.replace('visivel', 'escondido');
+                btnPlay.classList.replace('escondido', 'visivel');
+            }
+        }
+
+        // Ajuste a função de zerar para usar essa nova lógica
+        function zerarCronometro() {
+            if (confirm("Zerar tempo?")) {
+                controleCronometro('pause'); // Força a parada e a volta do botão Iniciar
+                segundos = 0;
+                atualizarDisplay();
             }
         }
 
@@ -195,7 +230,7 @@
         }
 
         function zerarCronometro() {
-            if (confirm("Zerar o tempo?")) {
+            if (confirm("Zerar tempo?")) {
                 pausarCronometro();
                 segundos = 0;
                 atualizarDisplay();
@@ -205,46 +240,53 @@
         function atualizarDisplay() {
             const min = Math.floor(segundos / 60);
             const seg = segundos % 60;
-            document.getElementById('display-tempo').innerText =
-                `${min < 10 ? "0" + min : min}:${seg < 10 ? "0" + seg : seg}`;
+            document.getElementById('display-tempo').innerText = `${min < 10 ? "0" + min : min}:${seg < 10 ? "0" + seg : seg}`;
         }
 
-        function toggleCronometro() {
-            const modal = document.getElementById('modal-cronometro');
-            const btn = document.getElementById('btn-cronometro');
-            modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'block' : 'none';
-            if (btn) btn.style.display = (modal.style.display === 'block') ? 'none' : 'flex';
-        }
-
-        // --- LÓGICA DA PARTIDA ---
+        // LÓGICA DE SELEÇÃO DE TIMES
         function abrirModalPartida() {
-            const s1 = document.getElementById('select-time1');
-            const s2 = document.getElementById('select-time2');
-            const capitães = [1, 2, 3, 4].map(i => document.getElementById('cap' + i).value || "Time " + i);
+            document.querySelectorAll('.opcao-time').forEach(el => el.classList.remove('selecionado'));
+            timeSelecionadoEsq = null;
+            timeSelecionadoDir = null;
 
-            [s1, s2].forEach(select => {
-                select.innerHTML = "";
-                capitães.forEach((nome, i) => {
-                    let opt = document.createElement("option");
-                    opt.value = i + 1;
-                    opt.text = nome;
-                    select.add(opt);
-                });
-            });
+            for (let i = 1; i <= 4; i++) {
+                const nome = document.getElementById('cap' + i).value || "Time " + i;
+                document.querySelectorAll(`.opcao-time[data-time="${i}"]`).forEach(el => el.innerText = nome);
+            }
             document.getElementById('modal-partida').style.display = 'block';
+        }
+
+        function selecionarTime(numero, coluna) {
+            if (coluna === 'esquerda') {
+                timeSelecionadoEsq = numero;
+                destacarSelecao('coluna-esquerda', numero);
+            } else {
+                timeSelecionadoDir = numero;
+                destacarSelecao('coluna-direita', numero);
+            }
+        }
+
+        function destacarSelecao(containerId, numero) {
+            const container = document.getElementById(containerId);
+            container.querySelectorAll('.opcao-time').forEach(el => {
+                el.classList.remove('selecionado');
+                if (parseInt(el.getAttribute('data-time')) === numero) el.classList.add('selecionado');
+            });
         }
 
         function fecharModalPartida() {
             document.getElementById('modal-partida').style.display = 'none';
         }
 
-        function confirmarPartida() {
-            const idT1 = document.getElementById('select-time1').value;
-            const idT2 = document.getElementById('select-time2').value;
-            if (idT1 === idT2) return alert("Escolha times diferentes!");
+        function confirmarPartidaNova() {
+            if (!timeSelecionadoEsq || !timeSelecionadoDir) return alert("Selecione os dois times!");
+            if (timeSelecionadoEsq === timeSelecionadoDir) return alert("Times iguais!");
 
-            document.getElementById('modal-nome-t1').innerText = document.getElementById('cap' + idT1).value || "Time " + idT1;
-            document.getElementById('modal-nome-t2').innerText = document.getElementById('cap' + idT2).value || "Time " + idT2;
+            const nome1 = document.getElementById('cap' + timeSelecionadoEsq).value || "Time " + timeSelecionadoEsq;
+            const nome2 = document.getElementById('cap' + timeSelecionadoDir).value || "Time " + timeSelecionadoDir;
+
+            document.getElementById('modal-nome-t1').innerText = nome1;
+            document.getElementById('modal-nome-t2').innerText = nome2;
 
             fecharModalPartida();
             toggleCronometro();
@@ -255,8 +297,6 @@
 
         function finalizarPartidaRapido() {
             pausarCronometro();
-            const idT1 = document.getElementById('select-time1').value;
-            const idT2 = document.getElementById('select-time2').value;
             const nomeT1 = document.getElementById('modal-nome-t1').innerText;
             const nomeT2 = document.getElementById('modal-nome-t2').innerText;
 
@@ -265,23 +305,25 @@
 
             if (isNaN(g1) || isNaN(g2)) return;
 
-            // Salvar no Histórico de Jogos
+            // Salvar no Ranking Geral (LocalStorage)
+            if (g1 > g2) atualizarPontosNoRanking('time' + timeSelecionadoEsq, 3);
+            else if (g2 > g1) atualizarPontosNoRanking('time' + timeSelecionadoDir, 3);
+            else {
+                atualizarPontosNoRanking('time' + timeSelecionadoEsq, 1);
+                atualizarPontosNoRanking('time' + timeSelecionadoDir, 1);
+            }
+
+            // Histórico de Jogos
             const historico = JSON.parse(localStorage.getItem('historico_jogos_bn')) || [];
             historico.unshift({ t1: nomeT1, gols1: g1, t2: nomeT2, gols2: g2, hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) });
             localStorage.setItem('historico_jogos_bn', JSON.stringify(historico.slice(0, 20)));
 
-            // Atribuir pontos no Ranking (3 para vitória, 1 para empate)
-            if (g1 > g2) atualizarPontosNoRanking('time' + idT1, 3);
-            else if (g2 > g1) atualizarPontosNoRanking('time' + idT2, 3);
-            else { atualizarPontosNoRanking('time' + idT1, 1); atualizarPontosNoRanking('time' + idT2, 1); }
-
-            alert("Resultado salvo!");
+            alert("Partida finalizada!");
             location.reload();
         }
 
         function atualizarPontosNoRanking(id, pts) {
-            const el = document.getElementById(id);
-            let total = (parseInt(el.innerText) || 0) + pts;
+            let total = (parseInt(localStorage.getItem(id)) || 0) + pts;
             localStorage.setItem(id, total);
         }
 
@@ -295,48 +337,14 @@
                 </li>`).join('');
         }
 
-        // --- FINALIZAR PELADA ---
         function limparTudo() {
-            if (prompt("Senha para finalizar rodada:") === "1234") {
-                const v = calcularVencedor();
-                if (v.pontos > 0) {
-                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                    salvarVencedorNoHistorico(v);
-                }
-
-                ['time1', 'time2', 'time3', 'time4', 'cap1', 'cap2', 'cap3', 'cap4'].forEach(k => localStorage.removeItem(k));
-
-                // Apaga histórico de jogos em 3 minutos
-                setTimeout(() => {
-                    localStorage.removeItem('historico_jogos_bn');
-                    exibirHistoricoJogos();
-                }, 3 * 60 * 1000);
-
-                setTimeout(() => location.reload(), 2000);
+            if (prompt("Senha:") === "1234") {
+                const campos = ['time1', 'time2', 'time3', 'time4', 'cap1', 'cap2', 'cap3', 'cap4', 'historico_jogos_bn'];
+                campos.forEach(c => localStorage.removeItem(c));
+                location.reload();
             }
         }
-
-        function calcularVencedor() {
-            const times = [1, 2, 3, 4].map(i => ({
-                nome: document.getElementById('cap' + i).value || "Time " + i,
-                pontos: parseInt(document.getElementById('time' + i).innerText) || 0
-            }));
-            return times.reduce((a, b) => (a.pontos > b.pontos) ? a : b);
-        }
-
-        function salvarVencedorNoHistorico(v) {
-            let h = JSON.parse(localStorage.getItem('historico_pelada')) || [];
-            h.unshift(`${new Date().toLocaleDateString('pt-BR')}: 🥇 ${v.nome} (${v.pontos} pts)`);
-            localStorage.setItem('historico_pelada', JSON.stringify(h.slice(0, 15)));
-        }
-
-        function exibirHistoricoCampeoes() {
-            const lista = document.getElementById('lista-historico');
-            const h = JSON.parse(localStorage.getItem('historico_pelada')) || [];
-            lista.innerHTML = h.map(item => `<li style="color: #ddd; margin: 5px 0;">${item}</li>`).join('');
-        }
     </script>
-
 </body>
 
 </html>
