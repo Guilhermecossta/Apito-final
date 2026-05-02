@@ -22,12 +22,64 @@
             background: rgba(61, 61, 61, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 10px;
-            padding: 7px 20px;
+            padding: 7px 30px;
             margin: 0 0 10px 0;
             transition: all 500ms;
         }
 
         #modal-partida {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.575);
+        }
+
+        .modalcolocarplacar {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.575);
+        }
+
+        .placar1,
+        .placar2 {
+            input[type="text"]:focus {
+                outline: none;
+                border-color: var(--primary-gold);
+            }
+
+            input[type="text"] {
+                border: none;
+                text-align: center;
+                font-size: 1.5rem;
+                font-weight: 700;
+            }
+        }
+
+        .senha {
+            input[type="text"]:focus {
+                outline: none;
+                border-color: var(--primary-gold);
+            }
+
+            input[type="text"] {
+                border: none;
+                text-align: center;
+                font-size: 1rem;
+                font-weight: 700;
+                padding: 10px 0;
+            }
+        }
+
+        .modal-senhaconfirmar {
             display: none;
             position: fixed;
             z-index: 1001;
@@ -79,28 +131,46 @@
         </div>
     </div>
 
+    <div class="modal-senhaconfirmar" id="modal-senha">
+        <div
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #222; padding: 30px; text-align: center; border-radius: 15px; border: 1px solid rgb(26, 34, 56); color: white; background-color: rgb(30, 41, 59);">
+            <span onclick="fecharModalSenha()"
+                style="position: absolute; top: 0; right: 0; font-size: 30px; cursor: pointer; color: #888; margin: 0 10px;">&times;</span>
+            <div style="font-size: 1.5rem;">CONFIRMAR FIM DA PELADA</div>
+            <div style="margin-top: 20px;" class="senha"><input type="text" id="input-senha-reset"
+                    placeholder="SENHA"></div>
+            <button onclick="validarResetTotal()"
+                style="background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 30px">
+                CONFIRMAR
+            </button>
+        </div>
+    </div>
+
     <div id="btn-cronometro" onclick="toggleCronometro()">⏱️</div>
 
-    <div id="modal-cronometro"
-        style="display: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.479);">
-        <div class="modal-conteudo">
-            <span class="fechar" onclick="toggleCronometro()">&times;</span>
+    <div id="modal-cronometro">
+        <div class="modal-conteudo"
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #222; padding: 20px; text-align: center; border-radius: 15px; border: 1px solid rgb(26, 34, 56); color: white; background-color: rgb(30, 41, 59); box-shadow: none;">
+
+            <span class="fechar" onclick="toggleCronometro()"
+                style="position: absolute; top: 0; right: 0; font-size: 30px; cursor: pointer; color: #888; margin: 0 10px;">&times;</span>
+
             <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px;">
                 <div id="modal-nome-t1"
                     style="padding: 10px 0; background-color: white; color: black; font-weight: bold; border-radius: 5px; min-width: 100px; text-align: center;">
                     T1</div>
-                <div style="font-weight: bold; font-size: 24px; color: white;">VS</div>
+                <div style="font-weight: bold; font-size: 24px; color: white;">x</div>
                 <div id="modal-nome-t2"
                     style="padding: 10px 0; background-color: white; color: black; font-weight: bold; border-radius: 5px; min-width: 100px; text-align: center;">
                     T2</div>
             </div>
-            <h3 style="color: white; text-align: center; margin-top: 20px;">TEMPO DE PARTIDA</h3>
+            <h3 style="color: white; text-align: center; margin-top: 10px;">TEMPO DE PARTIDA</h3>
             <div id="display-tempo"
                 style="font-size: 50px; color: white; text-align: center; font-weight: bold; font-family:arial;">00:00
             </div>
             <!-- Controles Simplificados -->
             <div class="controles"
-                style="text-align: center; margin-top: 20px; display: flex; flex-direction: column; gap: 10px; padding: 0 20px;">
+                style="text-align: center; margin-top: 10px; display: flex; flex-direction: column; gap: 10px; padding: 0 20px;">
 
                 <!-- Botão Iniciar (Fica visível primeiro) -->
                 <div class="container-botoes-tempo">
@@ -112,13 +182,44 @@
                 </div>
 
                 <button class="finalizar"
-                    style="background-color: #28a745; color: white; width: 100%; padding: 15px; font-weight: bold;"
+                    style="background-color: #28a745; color: white; width: 100%;font-weight: bold;"
                     onclick="finalizarPartidaRapido()">FINALIZAR PARTIDA</button>
 
                 <!-- Botão Zerar Tempo -->
-                <button class="btn-reset" onclick="zerarCronometro()" style="width: 100%; padding: 15px;">ZERAR
+                <button class="btn-reset" onclick="zerarCronometro()" style="width: 100%;">ZERAR
                     TEMPO</button>
             </div>
+        </div>
+    </div>
+
+    <div class="modalcolocarplacar">
+        <div
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #222; padding: 20px; text-align: center; border-radius: 15px; border: 1px solid rgb(26, 34, 56); color: white; background-color: rgb(30, 41, 59);">
+            <div style="text-align: center; padding: 10px;  font-size: 1.5rem; font-weight: bold;">DIGITE O PLACAR</div>
+            <div style="display: flex;">
+                <div>
+                    <div style="text-align: center; padding-bottom: 10px; font-size: 1.5rem;">time 1</div>
+                    <div class="placar1">
+                        <input type="text"
+                            style="width: 100px; padding: 5px; border: none; border-radius: 10px; text-align: center;">
+                    </div>
+                </div>
+                <div
+                    style="display: flex; align-items: end; padding: 0 20px; font-weight: bold; font-size: 2rem; color: white;">
+                    X</div>
+                <div>
+                    <div style="text-align: center; padding-bottom: 10px; font-size: 1.5rem;">time 2</div>
+                    <div class="placar2">
+                        <input type="text"
+                            style="width: 100px; padding: 5px; border: none; border-radius: 10px; text-align: center;">
+                    </div>
+                </div>
+            </div>
+            <!-- Procure este botão no seu HTML e altere para: -->
+            <button onclick="confirmarPlacarFinal()"
+                style="background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 30px">
+                CONFIRMAR
+            </button>
         </div>
     </div>
 
@@ -126,9 +227,9 @@
     <div id="modal-partida">
         <div
             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #222; padding: 20px; text-align: center; border-radius: 15px; border: 1px solid rgb(26, 34, 56); color: white; background-color: rgb(30, 41, 59);">
-
             <span class="fechar" onclick="fecharModalPartida()"
-                style="position: absolute; top: 10px; right: 15px; font-size: 25px; cursor: pointer; color: #888;">&times;</span>
+                style="position: absolute; top: 0; right: 0; font-size: 30px; cursor: pointer; color: #888; margin: 0 10px;">&times;
+            </span>
 
             <div style="padding: 0 0 20px 0; font-size: 1.5rem; font-weight: bold;">ESCOLHA OS TIMES
             </div>
@@ -140,7 +241,8 @@
                     <div class="opcao-time" data-time="3" onclick="selecionarTime(3, 'esquerda')">Time 3</div>
                     <div class="opcao-time" data-time="4" onclick="selecionarTime(4, 'esquerda')">Time 4</div>
                 </div>
-                <div style="font-weight: bold; font-size: 2rem; color: white;">X</div>
+                <div style="font-weight: bold; font-size: 2rem; color: white; display: flex; align-items: center;">X
+                </div>
                 <div id="coluna-direita">
                     <div class="opcao-time" data-time="1" onclick="selecionarTime(1, 'direita')">Time 1</div>
                     <div class="opcao-time" data-time="2" onclick="selecionarTime(2, 'direita')">Time 2</div>
@@ -152,8 +254,6 @@
                 <button onclick="confirmarPartidaNova()"
                     style="background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">CONFIRMAR
                     JOGO</button>
-                <button onclick="fecharModalPartida()"
-                    style="background-color: transparent; color: #888; border: none; cursor: pointer;">Cancelar</button>
             </div>
         </div>
     </div>
@@ -296,30 +396,62 @@
         }
 
         function finalizarPartidaRapido() {
-            pausarCronometro();
+            // Para o cronômetro
+            controleCronometro('pause');
+
+            // Pega os nomes dos times que estão jogando para exibir no modal de placar
             const nomeT1 = document.getElementById('modal-nome-t1').innerText;
             const nomeT2 = document.getElementById('modal-nome-t2').innerText;
 
-            const g1 = parseInt(prompt(`Gols de ${nomeT1}:`, "0"));
-            const g2 = parseInt(prompt(`Gols de ${nomeT2}:`, "0"));
+            // Atualiza os labels dentro do modal de placar
+            const modalPlacar = document.querySelector('.modalcolocarplacar');
+            modalPlacar.querySelectorAll('div[style*="font-size: 1.5rem"]')[1].innerText = nomeT1;
+            modalPlacar.querySelectorAll('div[style*="font-size: 1.5rem"]')[2].innerText = nomeT2;
 
-            if (isNaN(g1) || isNaN(g2)) return;
+            // Exibe o modal
+            modalPlacar.style.display = 'block';
+        }
 
-            // Salvar no Ranking Geral (LocalStorage)
-            if (g1 > g2) atualizarPontosNoRanking('time' + timeSelecionadoEsq, 3);
-            else if (g2 > g1) atualizarPontosNoRanking('time' + timeSelecionadoDir, 3);
-            else {
+        function confirmarPlacarFinal() {
+            const g1 = parseInt(document.querySelector('.placar1 input').value);
+            const g2 = parseInt(document.querySelector('.placar2 input').value);
+
+            if (isNaN(g1) || isNaN(g2)) {
+                alert("Por favor, preencha os gols dos dois times!");
+                return;
+            }
+
+            // Nomes dos times
+            const nomeT1 = document.getElementById('modal-nome-t1').innerText;
+            const nomeT2 = document.getElementById('modal-nome-t2').innerText;
+
+            // Lógica de Pontuação no Ranking
+            if (g1 > g2) {
+                atualizarPontosNoRanking('time' + timeSelecionadoEsq, 3);
+            } else if (g2 > g1) {
+                atualizarPontosNoRanking('time' + timeSelecionadoDir, 3);
+            } else {
                 atualizarPontosNoRanking('time' + timeSelecionadoEsq, 1);
                 atualizarPontosNoRanking('time' + timeSelecionadoDir, 1);
             }
 
-            // Histórico de Jogos
+            // Salvar no Histórico
             const historico = JSON.parse(localStorage.getItem('historico_jogos_bn')) || [];
-            historico.unshift({ t1: nomeT1, gols1: g1, t2: nomeT2, gols2: g2, hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) });
+            historico.unshift({
+                t1: nomeT1,
+                gols1: g1,
+                t2: nomeT2,
+                gols2: g2,
+                hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+            });
             localStorage.setItem('historico_jogos_bn', JSON.stringify(historico.slice(0, 20)));
 
-            alert("Partida finalizada!");
-            location.reload();
+            // Efeito visual e recarregar
+            confetti(); // Opcional, já que você importou a biblioteca
+            setTimeout(() => {
+                alert("Partida finalizada com sucesso!");
+                location.reload();
+            }, 500);
         }
 
         function atualizarPontosNoRanking(id, pts) {
@@ -337,12 +469,39 @@
                 </li>`).join('');
         }
 
+        // Abre o modal em vez de usar o prompt antigo
         function limparTudo() {
-            if (prompt("Senha:") === "1234") {
-                const campos = ['time1', 'time2', 'time3', 'time4', 'cap1', 'cap2', 'cap3', 'cap4', 'historico_jogos_bn'];
-                campos.forEach(c => localStorage.removeItem(c));
-                location.reload();
+            document.getElementById('modal-senha').style.display = 'block';
+            document.getElementById('input-senha-reset').focus();
+        }
+
+        function fecharModalSenha() {
+            document.getElementById('modal-senha').style.display = 'none';
+            document.getElementById('input-senha-reset').value = '';
+        }
+
+        // Valida a senha e limpa o LocalStorage
+        function validarResetTotal() {
+            const senhaDigitada = document.getElementById('input-senha-reset').value;
+
+            if (senhaDigitada === "1234") {
+                if (confirm) {
+                    const campos = ['time1', 'time2', 'time3', 'time4', 'cap1', 'cap2', 'cap3', 'cap4', 'historico_jogos_bn'];
+                    campos.forEach(c => localStorage.removeItem(c));
+                    location.reload();
+                }
+            } else {
+                alert("Senha incorreta!");
+                document.getElementById('input-senha-reset').value = '';
             }
+        }
+
+        // Fechar modal ao clicar fora dele
+        window.onclick = function (event) {
+            const modalSenha = document.getElementById('modal-senha');
+            const modalPartida = document.getElementById('modal-partida');
+            if (event.target == modalSenha) fecharModalSenha();
+            if (event.target == modalPartida) fecharModalPartida();
         }
     </script>
 </body>
