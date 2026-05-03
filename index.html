@@ -7,95 +7,11 @@
     <title>PELADA BN - Placar</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <style>
-        .opcao-time {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 7px 30px;
-            margin: 0 0 10px 0;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .opcao-time.selecionado {
-            background: rgba(61, 61, 61, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 7px 30px;
-            margin: 0 0 10px 0;
-            transition: all 500ms;
-        }
-
-        #modal-partida {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.575);
-        }
-
-        .modalcolocarplacar {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.575);
-        }
-
-        .placar1,
-        .placar2 {
-            input[type="text"]:focus {
-                outline: none;
-                border-color: var(--primary-gold);
-            }
-
-            input[type="text"] {
-                border: none;
-                text-align: center;
-                font-size: 1.5rem;
-                font-weight: 700;
-            }
-        }
-
-        .senha {
-            input[type="text"]:focus {
-                outline: none;
-                border-color: var(--primary-gold);
-            }
-
-            input[type="text"] {
-                border: none;
-                text-align: center;
-                font-size: 1rem;
-                font-weight: 700;
-                padding: 10px 0;
-            }
-        }
-
-        .modal-senhaconfirmar {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.575);
-        }
-    </style>
 </head>
 
 <body>
     <div class="caixa">
         <h1 class="titulo" style="text-align: center; margin: 0 0 10px;">PELADA BN</h1>
-
         <div class="fileira">
             <div class="time timeum">
                 <h1><input type="text" id="cap1" placeholder="CAPITÃO" oninput="salvarNome('cap1')"></h1>
@@ -106,8 +22,7 @@
                 <h1 class="placar" id="time2">0</h1>
             </div>
         </div>
-
-        <div class="fileira">
+        <div class="fileira fil">
             <div class="time timetres">
                 <h1><input type="text" id="cap3" placeholder="CAPITÃO" oninput="salvarNome('cap3')"></h1>
                 <h1 class="placar" id="time3">0</h1>
@@ -117,44 +32,32 @@
                 <h1 class="placar" id="time4">0</h1>
             </div>
         </div>
-
         <div class="resetar" style="text-align: center;">
-            <button class="btn-começar" onclick="abrirModalPartida()" style="background-color: #28a745; color: white;">
+            <button class="btn-começar btn" onclick="abrirModalPartida()">
                 ⚽ COMEÇAR PARTIDA
             </button>
             <button class="finalizar" onclick="limparTudo()">🏆 FINALIZAR PELADA</button>
         </div>
-
         <div id="secao-jogos" style="margin-top: 20px;">
             <h2 style="color: white;">⚽ Últimas Partidas</h2>
             <ul id="lista-jogos" style="list-style: none; padding: 0;"></ul>
         </div>
     </div>
-
     <div class="modal-senhaconfirmar" id="modal-senha">
-        <div
-            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #222; padding: 30px; text-align: center; border-radius: 15px; border: 1px solid rgb(26, 34, 56); color: white; background-color: rgb(30, 41, 59);">
-            <span onclick="fecharModalSenha()"
-                style="position: absolute; top: 0; right: 0; font-size: 30px; cursor: pointer; color: #888; margin: 0 10px;">&times;</span>
+        <div class="modal">
+            <span class="botao" onclick="fecharModalSenha()">&times;</span>
             <div style="font-size: 1.5rem;">CONFIRMAR FIM DA PELADA</div>
-            <div style="margin-top: 20px;" class="senha"><input type="text" id="input-senha-reset"
-                    placeholder="SENHA"></div>
-            <button onclick="validarResetTotal()"
-                style="background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 30px">
+            <div style="margin-top: 20px;" class="senha"><input type="text" id="input-senha-reset" placeholder="SENHA">
+            </div>
+            <button class="btn" onclick="validarResetTotal()">
                 CONFIRMAR
             </button>
         </div>
     </div>
-
     <div id="btn-cronometro" onclick="toggleCronometro()">⏱️</div>
-
     <div id="modal-cronometro">
-        <div class="modal-conteudo"
-            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #222; padding: 20px; text-align: center; border-radius: 15px; border: 1px solid rgb(26, 34, 56); color: white; background-color: rgb(30, 41, 59); box-shadow: none;">
-
-            <span class="fechar" onclick="toggleCronometro()"
-                style="position: absolute; top: 0; right: 0; font-size: 30px; cursor: pointer; color: #888; margin: 0 10px;">&times;</span>
-
+        <div class="modal">
+            <span class="botao" onclick="toggleCronometro()">&times;</span>
             <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px;">
                 <div id="modal-nome-t1"
                     style="padding: 10px 0; background-color: white; color: black; font-weight: bold; border-radius: 5px; min-width: 100px; text-align: center;">
@@ -168,24 +71,15 @@
             <div id="display-tempo"
                 style="font-size: 50px; color: white; text-align: center; font-weight: bold; font-family:arial;">00:00
             </div>
-            <!-- Controles Simplificados -->
             <div class="controles"
                 style="text-align: center; margin-top: 10px; display: flex; flex-direction: column; gap: 10px; padding: 0 20px;">
-
-                <!-- Botão Iniciar (Fica visível primeiro) -->
                 <div class="container-botoes-tempo">
-                    <!-- O botão de Iniciar começa VISÍVEL, o de Pausar começa ESCONDIDO -->
                     <button id="btn-play" class="btn-tempo btn-start visivel"
                         onclick="controleCronometro('play')">INICIAR</button>
                     <button id="btn-pause" class="btn-tempo btn-pause escondido" onclick="controleCronometro('pause')"
                         style="background-color: #ffc107; color: black;">PAUSAR</button>
                 </div>
-
-                <button class="finalizar"
-                    style="background-color: #28a745; color: white; width: 100%;font-weight: bold;"
-                    onclick="finalizarPartidaRapido()">FINALIZAR PARTIDA</button>
-
-                <!-- Botão Zerar Tempo -->
+                <button class="finalizar btn" onclick="finalizarPartidaRapido()">FINALIZAR PARTIDA</button>
                 <button class="btn-reset" onclick="zerarCronometro()" style="width: 100%;">ZERAR
                     TEMPO</button>
             </div>
@@ -193,10 +87,9 @@
     </div>
 
     <div class="modalcolocarplacar">
-        <div
-            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #222; padding: 20px; text-align: center; border-radius: 15px; border: 1px solid rgb(26, 34, 56); color: white; background-color: rgb(30, 41, 59);">
+        <div class="modal">
             <div style="text-align: center; padding: 10px;  font-size: 1.5rem; font-weight: bold;">DIGITE O PLACAR</div>
-            <div style="display: flex;">
+            <div style="display: flex; margin-bottom: 20px;">
                 <div>
                     <div style="text-align: center; padding-bottom: 10px; font-size: 1.5rem;">time 1</div>
                     <div class="placar1">
@@ -215,25 +108,16 @@
                     </div>
                 </div>
             </div>
-            <!-- Procure este botão no seu HTML e altere para: -->
-            <button onclick="confirmarPlacarFinal()"
-                style="background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 30px">
+            <button class="btn" onclick="confirmarPlacarFinal()">
                 CONFIRMAR
             </button>
         </div>
     </div>
-
-    <!-- Modal Seleção de Times -->
     <div id="modal-partida">
-        <div
-            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #222; padding: 20px; text-align: center; border-radius: 15px; border: 1px solid rgb(26, 34, 56); color: white; background-color: rgb(30, 41, 59);">
-            <span class="fechar" onclick="fecharModalPartida()"
-                style="position: absolute; top: 0; right: 0; font-size: 30px; cursor: pointer; color: #888; margin: 0 10px;">&times;
-            </span>
-
+        <div class="modal">
+            <span class="botao" onclick="fecharModalPartida()">&times;</span>
             <div style="padding: 0 0 20px 0; font-size: 1.5rem; font-weight: bold;">ESCOLHA OS TIMES
             </div>
-            <!-- ... resto do código ... -->
             <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
                 <div id="coluna-esquerda">
                     <div class="opcao-time" data-time="1" onclick="selecionarTime(1, 'esquerda')">Time 1</div>
@@ -251,9 +135,7 @@
                 </div>
             </div>
             <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
-                <button onclick="confirmarPartidaNova()"
-                    style="background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">CONFIRMAR
-                    JOGO</button>
+                <button class="btn" onclick="confirmarPartidaNova()">CONFIRMAR JOGO</button>
             </div>
         </div>
     </div>
@@ -292,7 +174,6 @@
             const btnPause = document.getElementById('btn-pause');
 
             if (acao === 'play') {
-                // Lógica de Iniciar
                 if (!rodando) {
                     rodando = true;
                     cronometro = setInterval(() => {
@@ -300,25 +181,21 @@
                         atualizarDisplay();
                     }, 1000);
 
-                    // Troca visual: Esconde Play, Mostra Pause
                     btnPlay.classList.replace('visivel', 'escondido');
                     btnPause.classList.replace('escondido', 'visivel');
                 }
             } else {
-                // Lógica de Pausar
                 clearInterval(cronometro);
                 rodando = false;
 
-                // Troca visual: Esconde Pause, Mostra Play
                 btnPause.classList.replace('visivel', 'escondido');
                 btnPlay.classList.replace('escondido', 'visivel');
             }
         }
 
-        // Ajuste a função de zerar para usar essa nova lógica
         function zerarCronometro() {
             if (confirm("Zerar tempo?")) {
-                controleCronometro('pause'); // Força a parada e a volta do botão Iniciar
+                controleCronometro('pause');
                 segundos = 0;
                 atualizarDisplay();
             }
@@ -343,7 +220,6 @@
             document.getElementById('display-tempo').innerText = `${min < 10 ? "0" + min : min}:${seg < 10 ? "0" + seg : seg}`;
         }
 
-        // LÓGICA DE SELEÇÃO DE TIMES
         function abrirModalPartida() {
             document.querySelectorAll('.opcao-time').forEach(el => el.classList.remove('selecionado'));
             timeSelecionadoEsq = null;
@@ -396,19 +272,15 @@
         }
 
         function finalizarPartidaRapido() {
-            // Para o cronômetro
             controleCronometro('pause');
 
-            // Pega os nomes dos times que estão jogando para exibir no modal de placar
             const nomeT1 = document.getElementById('modal-nome-t1').innerText;
             const nomeT2 = document.getElementById('modal-nome-t2').innerText;
 
-            // Atualiza os labels dentro do modal de placar
             const modalPlacar = document.querySelector('.modalcolocarplacar');
             modalPlacar.querySelectorAll('div[style*="font-size: 1.5rem"]')[1].innerText = nomeT1;
             modalPlacar.querySelectorAll('div[style*="font-size: 1.5rem"]')[2].innerText = nomeT2;
 
-            // Exibe o modal
             modalPlacar.style.display = 'block';
         }
 
@@ -435,7 +307,6 @@
                 atualizarPontosNoRanking('time' + timeSelecionadoDir, 1);
             }
 
-            // Salvar no Histórico
             const historico = JSON.parse(localStorage.getItem('historico_jogos_bn')) || [];
             historico.unshift({
                 t1: nomeT1,
@@ -446,8 +317,7 @@
             });
             localStorage.setItem('historico_jogos_bn', JSON.stringify(historico.slice(0, 20)));
 
-            // Efeito visual e recarregar
-            confetti(); // Opcional, já que você importou a biblioteca
+           ;
             setTimeout(() => {
                 alert("Partida finalizada com sucesso!");
                 location.reload();
@@ -469,7 +339,6 @@
                 </li>`).join('');
         }
 
-        // Abre o modal em vez de usar o prompt antigo
         function limparTudo() {
             document.getElementById('modal-senha').style.display = 'block';
             document.getElementById('input-senha-reset').focus();
@@ -480,7 +349,6 @@
             document.getElementById('input-senha-reset').value = '';
         }
 
-        // Valida a senha e limpa o LocalStorage
         function validarResetTotal() {
             const senhaDigitada = document.getElementById('input-senha-reset').value;
 
@@ -496,7 +364,6 @@
             }
         }
 
-        // Fechar modal ao clicar fora dele
         window.onclick = function (event) {
             const modalSenha = document.getElementById('modal-senha');
             const modalPartida = document.getElementById('modal-partida');
@@ -505,5 +372,4 @@
         }
     </script>
 </body>
-
 </html>
