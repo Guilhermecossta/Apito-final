@@ -16,20 +16,24 @@
             <div class="time timeum">
                 <h1><input type="text" id="cap1" placeholder="CAPITÃO" oninput="salvarNome('cap1')"></h1>
                 <h1 class="placar" id="time1">0</h1>
+                <button class="btn editar" onclick="abrirModalEditarPontos(1)">Editar pontos</button>
             </div>
             <div class="time timedois">
                 <h1><input type="text" id="cap2" placeholder="CAPITÃO" oninput="salvarNome('cap2')"></h1>
                 <h1 class="placar" id="time2">0</h1>
+                <button class="btn editar" onclick="abrirModalEditarPontos(2)">Editar pontos</button>
             </div>
         </div>
         <div class="fileira fil">
             <div class="time timetres">
                 <h1><input type="text" id="cap3" placeholder="CAPITÃO" oninput="salvarNome('cap3')"></h1>
                 <h1 class="placar" id="time3">0</h1>
+                <button class="btn editar" onclick="abrirModalEditarPontos(3)">Editar pontos</button>
             </div>
             <div class="time timequatro">
                 <h1><input type="text" id="cap4" placeholder="CAPITÃO" oninput="salvarNome('cap4')"></h1>
                 <h1 class="placar" id="time4">0</h1>
+                <button class="btn editar" onclick="abrirModalEditarPontos(4)">Editar pontos</button>
             </div>
         </div>
         <div class="resetar" style="text-align: center;">
@@ -43,6 +47,19 @@
             <ul id="lista-jogos" style="list-style: none; padding: 0;"></ul>
         </div>
     </div>
+
+    <!-- Modal Editar Pontos -->
+    <div id="modal-editar-pontos" style="display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;">
+        <div class="modal">
+            <span class="botao" onclick="fecharModalEditarPontos()">&times;</span>
+            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 15px;" id="titulo-editar-pontos">EDITAR PONTOS</div>
+            <div style="margin-bottom: 15px;" class="pontos">
+                <input type="number"  id="input-novos-pontos" placeholder="Nova pontuação" style="width: 90%; padding: 10px; font-size: 1.2rem; text-align: center; border-radius: 5px; border: none;">
+            </div>
+            <button class="btn" onclick="confirmarEdicaoPontos()">CONFIRMAR</button>
+        </div>
+    </div>
+
     <div class="modal-senhaconfirmar" id="modal-senha">
         <div class="modal">
             <span class="botao" onclick="fecharModalSenha()">&times;</span>
@@ -146,6 +163,7 @@
         let rodando = false;
         let timeSelecionadoEsq = null;
         let timeSelecionadoDir = null;
+        let timeEmEdicao = null;
 
         window.onload = function () {
             const campos = ['time1', 'time2', 'time3', 'time4', 'cap1', 'cap2', 'cap3', 'cap4'];
@@ -162,6 +180,40 @@
 
         function salvarNome(idInput) {
             localStorage.setItem(idInput, document.getElementById(idInput).value);
+        }
+
+        function abrirModalEditarPontos(numeroTime) {
+            timeEmEdicao = numeroTime;
+            const nomeCapitao = document.getElementById('cap' + numeroTime).value || 'Time ' + numeroTime;
+            const pontosAtuais = document.getElementById('time' + numeroTime).innerText;
+
+            document.getElementById('titulo-editar-pontos').innerText = `EDITAR PONTOS - ${nomeCapitao.toUpperCase()}`;
+            document.getElementById('input-novos-pontos').value = pontosAtuais;
+            document.getElementById('modal-editar-pontos').style.display = 'block';
+            document.getElementById('input-novos-pontos').focus();
+        }
+
+        function fecharModalEditarPontos() {
+            document.getElementById('modal-editar-pontos').style.display = 'none';
+            timeEmEdicao = null;
+        }
+
+        function confirmarEdicaoPontos() {
+            if (!timeEmEdicao) return;
+
+            const novoValorInput = document.getElementById('input-novos-pontos').value;
+            const novosPontos = parseInt(novoValorInput);
+
+            if (isNaN(novosPontos) || novosPontos < 0) {
+                alert("Por favor, digite uma pontuação válida!");
+                return;
+            }
+
+            const idTime = 'time' + timeEmEdicao;
+            document.getElementById(idTime).innerText = novosPontos;
+            localStorage.setItem(idTime, novosPontos);
+
+            fecharModalEditarPontos();
         }
 
         function toggleCronometro() {
@@ -204,14 +256,6 @@
         function pausarCronometro() {
             clearInterval(cronometro);
             rodando = false;
-        }
-
-        function zerarCronometro() {
-            if (confirm("Zerar tempo?")) {
-                pausarCronometro();
-                segundos = 0;
-                atualizarDisplay();
-            }
         }
 
         function atualizarDisplay() {
@@ -268,7 +312,7 @@
             toggleCronometro();
             segundos = 0;
             atualizarDisplay();
-            iniciarCronometro();
+            controleCronometro('play');
         }
 
         function finalizarPartidaRapido() {
@@ -293,11 +337,9 @@
                 return;
             }
 
-            // Nomes dos times
             const nomeT1 = document.getElementById('modal-nome-t1').innerText;
             const nomeT2 = document.getElementById('modal-nome-t2').innerText;
 
-            // Lógica de Pontuação no Ranking
             if (g1 > g2) {
                 atualizarPontosNoRanking('time' + timeSelecionadoEsq, 3);
             } else if (g2 > g1) {
@@ -317,7 +359,6 @@
             });
             localStorage.setItem('historico_jogos_bn', JSON.stringify(historico.slice(0, 20)));
 
-           ;
             setTimeout(() => {
                 alert("Partida finalizada com sucesso!");
                 location.reload();
@@ -353,7 +394,7 @@
             const senhaDigitada = document.getElementById('input-senha-reset').value;
 
             if (senhaDigitada === "1234") {
-                if (confirm) {
+                if (confirm("Deseja realmente zerar todos os dados da pelada?")) {
                     const campos = ['time1', 'time2', 'time3', 'time4', 'cap1', 'cap2', 'cap3', 'cap4', 'historico_jogos_bn'];
                     campos.forEach(c => localStorage.removeItem(c));
                     location.reload();
@@ -367,8 +408,10 @@
         window.onclick = function (event) {
             const modalSenha = document.getElementById('modal-senha');
             const modalPartida = document.getElementById('modal-partida');
+            const modalEditarPontos = document.getElementById('modal-editar-pontos');
             if (event.target == modalSenha) fecharModalSenha();
             if (event.target == modalPartida) fecharModalPartida();
+            if (event.target == modalEditarPontos) fecharModalEditarPontos();
         }
     </script>
 </body>
