@@ -170,6 +170,9 @@ button.editar {
     font-size: 30px;
     z-index: 1000;
     cursor: pointer;
+    background-color: #06080f;
+    padding: 2px 5px;
+    border-radius: 100%;
 }
 
 #modal-cronometro {

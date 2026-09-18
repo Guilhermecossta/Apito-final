@@ -4,14 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PELADA BN - Placar</title>
+    <title>Apito final</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="shortcut icon" href="objetivo.png" type="image/x-icon">
 </head>
 
 <body>
     <div class="caixa">
-        <h1 class="titulo" style="text-align: center; margin: 0 0 10px;">PELADA BN</h1>
+        <h1 class="titulo" style="text-align: center; margin: 0 0 10px;">APITO FINAL</h1>
         <div class="fileira">
             <div class="time timeum">
                 <h1><input type="text" id="cap1" placeholder="CAPITÃO" oninput="salvarNome('cap1')"></h1>
@@ -49,7 +50,7 @@
     </div>
 
     <!-- Modal Editar Pontos -->
-    <div id="modal-editar-pontos" style="display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;">
+    <div id="modal-editar-pontos" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;">
         <div class="modal">
             <span class="botao" onclick="fecharModalEditarPontos()">&times;</span>
             <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 15px;" id="titulo-editar-pontos">EDITAR PONTOS</div>
